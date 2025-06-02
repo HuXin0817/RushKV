@@ -1,205 +1,205 @@
 # RushKV
 
-一个基于 Go 语言实现的分布式键值存储系统，使用 gRPC 进行通信，BoltDB 作为存储引擎，并采用一致性哈希算法实现数据分片。
+A distributed key-value storage system implemented in Go, using gRPC for communication, BoltDB as the storage engine, and consistent hashing algorithm for data sharding.
 
-## 特性
+## Features
 
-- 🚀 **高性能**: 基于 gRPC 的高效通信协议
-- 🔄 **分布式**: 支持多节点集群部署
-- 📊 **一致性哈希**: 智能数据分片和负载均衡
-- 💾 **持久化存储**: 使用 BoltDB 确保数据持久性
-- 🛠️ **简单易用**: 提供命令行客户端和编程接口
-- 🔧 **可扩展**: 支持动态节点加入和离开
+- 🚀 **High Performance**: Efficient communication protocol based on gRPC
+- 🔄 **Distributed**: Support for multi-node cluster deployment
+- 📊 **Consistent Hashing**: Intelligent data sharding and load balancing
+- 💾 **Persistent Storage**: Data persistence guaranteed by BoltDB
+- 🛠️ **Easy to Use**: Command-line client and programming interface provided
+- 🔧 **Scalable**: Support for dynamic node joining and leaving
 
-## 架构
+## Architecture
 
-RushKV 采用分布式架构，主要组件包括：
+RushKV adopts a distributed architecture with the following main components:
 
-- **Server**: 核心服务节点，处理数据存储和集群管理
-- **Client**: 客户端库，提供简洁的 API 接口
-- **Storage Engine**: 基于 BoltDB 的存储引擎
-- **Consistent Hash**: 一致性哈希算法实现数据分片
-- **CLI**: 命令行客户端工具
+- **Server**: Core service node that handles data storage and cluster management
+- **Client**: Client library providing clean API interface
+- **Storage Engine**: Storage engine based on BoltDB
+- **Consistent Hash**: Consistent hashing algorithm for data sharding
+- **CLI**: Command-line client tool
 
-## 快速开始
+## Quick Start
 
-### 环境要求
+### Requirements
 
 - Go 1.24.3+
-- Protocol Buffers 编译器
+- Protocol Buffers compiler
 
-### 安装
+### Installation
 
-1. 克隆项目
+1. Clone the project
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/HuXin0817/RushKV
 cd RushKV
 ```
 
-2. 安装依赖
+2. Install dependencies
 
 ```bash
 go mod download
 ```
 
-3. 生成 protobuf 代码并构建
+3. Generate protobuf code and build
 
 ```bash
 make build
 ```
 
-### 启动单节点
+### Start Single Node
 
 ```bash
 ./rushkv -id=node1 -addr=localhost -port=8080 -data=./data/node1
 ```
 
-### 启动集群
+### Start Cluster
 
-使用提供的脚本启动 3 节点集群：
+Use the provided script to start a 3-node cluster:
 
 ```bash
 ./run_cluster.sh
 ```
 
-这将启动三个节点：
+This will start three nodes:
 
 - node1: localhost:8080
 - node2: localhost:8081
 - node3: localhost:8082
 
-## 使用方法
+## Usage
 
-### 命令行客户端
+### Command Line Client
 
 ```bash
-# 存储数据
-./rushkv-cli -server=localhost:8080 -batch -commands="put user:1 {\"name\":\"Alice\",\"age\":30}"
+# Store data
+./rushkv-cli -server=localhost:8080 -batch -commands=\"put user:1 {\\\"name\\\":\\\"Alice\\\",\\\"age\\\":30}\"
 
-# 获取数据
-./rushkv-cli -server=localhost:8080 -batch -commands="get user:1"
+# Get data
+./rushkv-cli -server=localhost:8080 -batch -commands=\"get user:1\"
 
-# 删除数据
-./rushkv-cli -server=localhost:8080 -batch -commands="delete user:1"
+# Delete data
+./rushkv-cli -server=localhost:8080 -batch -commands=\"delete user:1\"
 ```
 
-### 编程接口
+### Programming Interface
 
 ```go
 package main
 
 import (
-    "log"
-    "rushkv/client"
+    \"log\"
+    \"rushkv/client\"
 )
 
 func main() {
-    // 创建客户端
-    client, err := client.NewRushKVClient("localhost:8080")
+    // Create client
+    client, err := client.NewRushKVClient(\"localhost:8080\")
     if err != nil {
         log.Fatal(err)
     }
     defer client.Close()
 
-    // 存储数据
-    err = client.Put("key1", []byte("value1"))
+    // Store data
+    err = client.Put(\"key1\", []byte(\"value1\"))
     if err != nil {
         log.Fatal(err)
     }
 
-    // 获取数据
-    value, err := client.Get("key1")
+    // Get data
+    value, err := client.Get(\"key1\")
     if err != nil {
         log.Fatal(err)
     }
 
-    log.Printf("Value: %s", value)
+    log.Printf(\"Value: %s\", value)
 }
 ```
 
-## API 接口
+## API Reference
 
-RushKV 提供以下 gRPC 接口：
+RushKV provides the following gRPC interfaces:
 
-- `Put(key, value)` - 存储键值对
-- `Get(key)` - 获取指定键的值
-- `Delete(key)` - 删除指定键
-- `Join(nodeInfo)` - 节点加入集群
-- `Leave(nodeId)` - 节点离开集群
-- `GetClusterInfo()` - 获取集群信息
+- `Put(key, value)` - Store key-value pair
+- `Get(key)` - Get value for specified key
+- `Delete(key)` - Delete specified key
+- `Join(nodeInfo)` - Node joins cluster
+- `Leave(nodeId)` - Node leaves cluster
+- `GetClusterInfo()` - Get cluster information
 
-## 配置选项
+## Configuration Options
 
-| 参数    | 描述       | 默认值    |
-| ------- | ---------- | --------- |
-| `-id`   | 节点 ID    | node1     |
-| `-addr` | 服务器地址 | localhost |
-| `-port` | 服务器端口 | 8080      |
-| `-data` | 数据目录   | ./data    |
+| Parameter | Description    | Default   |
+| --------- | -------------- | --------- |
+| `-id`     | Node ID        | node1     |
+| `-addr`   | Server address | localhost |
+| `-port`   | Server port    | 8080      |
+| `-data`   | Data directory | ./data    |
 
-## 开发
+## Development
 
-### 构建命令
+### Build Commands
 
 ```bash
-# 构建所有组件
+# Build all components
 make build
 
-# 只生成protobuf代码
+# Generate protobuf code only
 make proto
 
-# 只构建服务器
+# Build server only
 make server
 
-# 只构建CLI客户端
+# Build CLI client only
 make cli
 
-# 运行测试
+# Run tests
 make test
 
-# 清理构建文件
+# Clean build files
 make clean
 ```
 
-### 项目结构
+### Project Structure
 
 ```
 RushKV/
-├── client/          # 客户端库
-├── cmd/cli/         # 命令行客户端
-├── data/            # 数据目录
-├── examples/        # 示例脚本
-├── hash/            # 一致性哈希实现
-├── proto/           # Protocol Buffers定义
-├── server/          # 服务器实现
-├── storage/         # 存储引擎
-├── main.go          # 服务器入口
-├── Makefile         # 构建脚本
-└── run_cluster.sh   # 集群启动脚本
+├── client/          # Client library
+├── cmd/cli/         # Command-line client
+├── data/            # Data directory
+├── examples/        # Example scripts
+├── hash/            # Consistent hashing implementation
+├── proto/           # Protocol Buffers definitions
+├── server/          # Server implementation
+├── storage/         # Storage engine
+├── main.go          # Server entry point
+├── Makefile         # Build script
+└── run_cluster.sh   # Cluster startup script
 ```
 
-## 示例
+## Examples
 
-查看 `examples/` 目录获取更多使用示例：
+Check the `examples/` directory for more usage examples:
 
 ```bash
-# 运行CLI演示
+# Run CLI demo
 ./examples/cli_demo.sh
 ```
 
-## 许可证
+## License
 
-本项目采用 [MIT 许可证](LICENSE)。
+This project is licensed under the [MIT License](LICENSE).
 
-## 贡献
+## Contributing
 
-欢迎提交 Issue 和 Pull Request 来改进项目！
+Welcome to submit Issues and Pull Requests to improve the project!
 
-## 技术栈
+## Tech Stack
 
-- **语言**: Go 1.24.3
-- **通信**: gRPC + Protocol Buffers
-- **存储**: BoltDB
-- **算法**: 一致性哈希
-- **构建**: Make
+- **Language**: Go 1.24.3
+- **Communication**: gRPC + Protocol Buffers
+- **Storage**: BoltDB
+- **Algorithm**: Consistent Hashing
+- **Build**: Make
