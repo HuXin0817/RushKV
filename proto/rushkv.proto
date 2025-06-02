@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package rushkv;
+
+option go_package = "./proto";
+
+service RushKV {
+    rpc Put(PutRequest) returns (PutResponse);
+    rpc Get(GetRequest) returns (GetResponse);
+    rpc Delete(DeleteRequest) returns (DeleteResponse);
+    rpc Join(JoinRequest) returns (JoinResponse);
+    rpc Leave(LeaveRequest) returns (LeaveResponse);
+    rpc GetClusterInfo(ClusterInfoRequest) returns (ClusterInfoResponse);
+}
+
+message PutRequest {
+    string key = 1;
+    bytes value = 2;
+}
+
+message PutResponse {
+    bool success = 1;
+    string error = 2;
+}
+
+message GetRequest {
+    string key = 1;
+}
+
+message GetResponse {
+    bool success = 1;
+    bytes value = 2;
+    string error = 3;
+}
+
+message DeleteRequest {
+    string key = 1;
+}
+
+message DeleteResponse {
+    bool success = 1;
+    string error = 2;
+}
+
+message JoinRequest {
+    string node_id = 1;
+    string address = 2;
+    int32 port = 3;
+}
+
+message JoinResponse {
+    bool success = 1;
+    string error = 2;
+}
+
+message LeaveRequest {
+    string node_id = 1;
+}
+
+message LeaveResponse {
+    bool success = 1;
+    string error = 2;
+}
+
+message ClusterInfoRequest {}
+
+message ClusterInfoResponse {
+    repeated NodeInfo nodes = 1;
+    string leader = 2;
+}
+
+message NodeInfo {
+    string id = 1;
+    string address = 2;
+    int32 port = 3;
+    bool is_leader = 4;
+}
